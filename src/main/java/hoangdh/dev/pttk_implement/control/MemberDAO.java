@@ -7,32 +7,34 @@ import hoangdh.dev.pttk_implement.model.Member;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemberDAO {
+public class MemberDAO extends DAO {
     private List<Member> members;
 
     public MemberDAO() {
-        createDummyData();
+        super();
     }
 
-    private void createDummyData() {
-        members = new ArrayList<>();
-
-        Doctor doctor = new Doctor(1, "doctor", "password", "John Doe", "1980-01-01", "Male", 42, "john.doe@example.com", "doctor");
-        doctor.setYearOfExperience(10);
-        doctor.setShiftSalary(5000.0f);
-        doctor.setDescription("Experienced cardiologist");
-        members.add(doctor);
-
-        Manager manager = new Manager(2, "manager", "password", "Jane Smith", "1975-05-15", "Female", 47, "jane.smith@example.com", "manager");
-        manager.setDepartment("HR");
-        members.add(manager);
-    }
-
-    public Member checkLogin(Member member) {
-        for (Member m : members) {
-            if (m.getUsername().equals(member.getUsername()) && m.getPassword().equals(member.getPassword())) {
-                return m;
+    public Object checkLogin(Member member) {
+        try {
+            Member member1 = getSession().createQuery("from Member where username = :username and password = :password", Member.class)
+                    .setParameter("username", member.getUsername())
+                    .setParameter("password", member.getPassword())
+                    .uniqueResult();
+            if(member1 != null) {
+                if(member1.getRole().equals("Doctor")) {
+                    Doctor doctor = getSession().createQuery("from Doctor where id = :id", Doctor.class)
+                            .setParameter("id", member1.getId())
+                            .uniqueResult();
+                    return doctor;
+                } else if(member1.getRole().equals("Manager")) {
+                    Manager manager = getSession().createQuery("from Manager where id = :id", Manager.class)
+                            .setParameter("id", member1.getId())
+                            .uniqueResult();
+                    return manager;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

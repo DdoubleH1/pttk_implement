@@ -1,12 +1,31 @@
 package hoangdh.dev.pttk_implement.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "doctor")
 public class Doctor extends Member {
+
+    @Column(name = "yearOfExperience")
     private Integer yearOfExperience;
+
+    @Column(name = "shiftSalary")
     private Float shiftSalary;
+
+    @Column(name = "description")
     private String description;
 
-    public Doctor(Integer id, String username, String password, String fullName, String dob, String gender, Integer age, String email, String role) {
-        super(id, username, password, fullName, dob, gender, age, email, role);
+    public Doctor(Member member, Integer yearOfExperience, Float shiftSalary, String description) {
+        super(member.getId(), member.getUsername(), member.getPassword(), member.getFullName(), member.getDob(), member.getGender(), member.getAge(), member.getEmail(), member.getRole());
+        this.yearOfExperience = yearOfExperience;
+        this.shiftSalary = shiftSalary;
+        this.description = description;
+    }
+
+    public Doctor() {
+
     }
 
     public Integer getYearOfExperience() {

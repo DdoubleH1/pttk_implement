@@ -9,10 +9,7 @@
 <%@ page import="hoangdh.dev.pttk_implement.model.Doctor" %>
 <%
     Doctor doctor = (Doctor) session.getAttribute("loggedInDoctor");
-    if (doctor == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
+
 %>
 <!DOCTYPE html>
 <html>
