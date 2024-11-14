@@ -8,31 +8,30 @@ import jakarta.persistence.*;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "username")
+    @Column(nullable = false)
     private String username;
 
-    @Column(name = "password")
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "full_name")
+    @Column(nullable = false)
     private String fullName;
 
-    @Column(name = "dob")
+    @Column(nullable = false)
     private String dob;
 
-    @Column(name = "gender")
+    @Column(nullable = false)
     private String gender;
 
-    @Column(name = "age")
+    @Column(nullable = false)
     private Integer age;
 
-    @Column(name = "email")
+    @Column(nullable = false)
     private String email;
 
-    @Column(name = "role")
+    @Column(nullable = false)
     private String role;
 
     public Member(Integer id, String username, String password, String fullName, String dob, String gender, Integer age, String email, String role) {

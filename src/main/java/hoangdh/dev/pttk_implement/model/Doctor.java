@@ -11,10 +11,10 @@ public class Doctor extends Member {
     @Column(name = "yearOfExperience")
     private Integer yearOfExperience;
 
-    @Column(name = "shiftSalary")
+    @Column(nullable = false)
     private Float shiftSalary;
 
-    @Column(name = "description")
+    @Column(nullable = false)
     private String description;
 
     public Doctor(Member member, Integer yearOfExperience, Float shiftSalary, String description) {

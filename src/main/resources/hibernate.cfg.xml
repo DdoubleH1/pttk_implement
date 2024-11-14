@@ -12,5 +12,10 @@
         <mapping class="hoangdh.dev.pttk_implement.model.Doctor"/>
         <mapping class="hoangdh.dev.pttk_implement.model.Manager"/>
         <mapping class="hoangdh.dev.pttk_implement.model.Member"/>
+        <mapping class="hoangdh.dev.pttk_implement.model.RegisteredShift"/>
+        <mapping class="hoangdh.dev.pttk_implement.model.Shift"/>
+        <mapping class="hoangdh.dev.pttk_implement.model.WorkingShift"/>
+        <mapping class="hoangdh.dev.pttk_implement.model.Room"/>
+
     </session-factory>
 </hibernate-configuration>

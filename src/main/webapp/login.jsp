@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Admin
-  Date: 11/12/2024
-  Time: 9:24 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
@@ -13,7 +6,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f8d7da;
+            background-color: white;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -23,7 +16,7 @@
 
         .login-container {
             background-color: #ffffff;
-            border: 1px solid #f5c6cb;
+            border: 1px solid #88B7A4;
             padding: 20px;
             border-radius: 5px;
             width: 300px;
@@ -32,13 +25,13 @@
         }
 
         h2 {
-            color: #721c24;
+            color: black;
             margin-bottom: 20px;
         }
 
         label {
             display: block;
-            color: #721c24;
+            color: black;
             font-weight: bold;
             margin-top: 10px;
             text-align: left;
@@ -48,14 +41,14 @@
             width: 100%;
             padding: 8px;
             margin: 5px 0 15px;
-            border: 1px solid #f5c6cb;
+            border: 1px solid #88B7A4;
             border-radius: 3px;
             box-sizing: border-box;
         }
 
         .login-button {
-            background-color: #f5c6cb;
-            color: #721c24;
+            background-color: #88B7A4;
+            color: #ffffff;
             padding: 10px;
             border: none;
             border-radius: 3px;
@@ -65,7 +58,7 @@
         }
 
         .login-button:hover {
-            background-color: #f8d7da;
+            background-color: #76A18E;
         }
     </style>
 </head>
@@ -74,13 +67,20 @@
     <h2>Login</h2>
     <form action="doLogin.jsp" method="post">
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username"
+               value="<%= session.getAttribute("loginUsername") != null ? session.getAttribute("loginUsername") : "" %>"
+               required>
 
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password"
+               value="<%= session.getAttribute("loginPassword") != null ? session.getAttribute("loginPassword") : "" %>"
+               required>
 
         <button type="submit" class="login-button">Login</button>
     </form>
+    <% if (request.getParameter("error") != null) { %>
+    <p style="color: red;">Invalid username or password.</p>
+    <% } %>
 </div>
 </body>
 </html>
