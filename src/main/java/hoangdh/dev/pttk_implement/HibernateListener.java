@@ -26,7 +26,7 @@ public class HibernateListener implements ServletContextListener {
 //                        null,
 //                        "doctor1",
 //                        "doctor1",
-//                        "Doctor 1",
+//                        "John Doe",
 //                        "1999-01-01",
 //                        "Male",
 //                        22,
@@ -46,15 +46,15 @@ public class HibernateListener implements ServletContextListener {
 //            Room room = new Room(null, roomName);
 //            roomDAO.createRoom(room);
 //        }
-
-        //create shift
+//
+////        create shift
 //        ShiftDAO shiftDAO = new ShiftDAO();
 //        Shift shift1 = new Shift(null, "08:00", "12:00");
 //        Shift shift2 = new Shift(null, "13:00", "17:00");
 //        shiftDAO.createShift(shift1);
 //        shiftDAO.createShift(shift2);
 
-        // create working shift from 11/11/2024 to 18/11/2024
+//         create working shift from 11/11/2024 to 18/11/2024
 //        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 //        LocalDate startDate = LocalDate.parse("2024-11-18", formatter);
 //        LocalDate endDate = LocalDate.parse("2024-11-24", formatter);
@@ -67,8 +67,6 @@ public class HibernateListener implements ServletContextListener {
 //            workingShiftDAO.createWorkingShift(workingShift1);
 //            workingShiftDAO.createWorkingShift(workingShift2);
 //        }
-
-
         DAO.init();
     }
 

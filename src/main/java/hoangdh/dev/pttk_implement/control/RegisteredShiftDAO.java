@@ -4,7 +4,7 @@ import hoangdh.dev.pttk_implement.model.RegisteredShift;
 
 import java.util.List;
 
-public class RegisteredShiftDAO extends DAO{
+public class RegisteredShiftDAO extends DAO {
     public RegisteredShiftDAO() {
         super();
     }
@@ -48,6 +48,36 @@ public class RegisteredShiftDAO extends DAO{
         return registeredShifts;
     }
 
+    public Boolean updateRegisteredShift(int registeredShiftId) {
+        try {
+            getSession().beginTransaction();
+            RegisteredShift registeredShift = getSession().get(RegisteredShift.class, registeredShiftId);
+            if (registeredShift != null) {
+                getSession().merge(registeredShift);
+                getSession().getTransaction().commit();
+                return true;
+            }
+        } catch (Exception e) {
+            getSession().getTransaction().rollback();
+            e.printStackTrace();
+        }
+        return false;
+    }
 
+    public Boolean deleteRegisteredShift(int registeredShiftId) {
+        try {
+            getSession().beginTransaction();
+            RegisteredShift registeredShift = getSession().get(RegisteredShift.class, registeredShiftId);
+            if (registeredShift != null) {
+                getSession().remove(registeredShift);
+                getSession().getTransaction().commit();
+                return true;
+            }
+        } catch (Exception e) {
+            getSession().getTransaction().rollback();
+            e.printStackTrace();
 
+        }
+        return false;
+    }
 }

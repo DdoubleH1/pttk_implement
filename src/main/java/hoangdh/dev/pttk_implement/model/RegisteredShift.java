@@ -59,11 +59,11 @@ public class RegisteredShift {
         this.registeredTime = registeredTime;
     }
 
-    public Boolean getScheduled() {
+    public Boolean getIsScheduled() {
         return isScheduled;
     }
 
-    public void setScheduled(Boolean scheduled) {
+    public void setIsScheduled(Boolean scheduled) {
         isScheduled = scheduled;
     }
 

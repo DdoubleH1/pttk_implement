@@ -76,26 +76,44 @@
         .save-button:hover {
             background-color: #76A18E; /* Darker shade of primary theme color */
         }
+
+        .save-button:disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+            border: 1px solid #999;
+        }
     </style>
+    <%
+        Integer modifyShift = Integer.valueOf(request.getParameter("shiftID"));
+        // save id to sesion
+        session.setAttribute("modifyShift", modifyShift.toString());
+    %>
 </head>
-<body>
+<body onload="checkShiftSelection()">
 <div class="container">
     <h1>Modify Shift</h1>
 
-    <form action="modifyShift.jsp" method="post">
+    <form action="modifyShift.jsp?shiftID=<%= modifyShift%>" method="post">
         <div class="form-group">
             <label for="workingShift">Working Shift:</label>
-            <select id="workingShift" name="workingShift">
+            <select id="workingShift" name="workingShift" onchange="checkShiftSelection()">
                 <%
-                    //get all working shift that doctor have not registered
+
                     List<WorkingShift> workingShifts = (List<WorkingShift>) session.getAttribute("workingShifts");
                     List<RegisteredShift> registeredShifts = (List<RegisteredShift>) session.getAttribute("registeredShifts");
                     if (workingShifts == null || workingShifts.isEmpty()) {
                         WorkingShiftDAO workingShiftDAO = new WorkingShiftDAO();
                         workingShifts = workingShiftDAO.getAllWorkingShifts();
-                        // save to session
                         session.setAttribute("workingShifts", workingShifts);
                     }
+                    WorkingShift selectedWorkingShift = workingShifts.stream()
+                            .filter(ws -> ws.getId().equals(modifyShift))
+                            .findFirst()
+                            .orElse(null);
+
+                    String selectedShift = selectedWorkingShift.getDate() + ", " + selectedWorkingShift.getShift().getStartTime() + "-" + selectedWorkingShift.getShift().getEndTime();
+
                     if (registeredShifts == null) {
                         registeredShifts = new ArrayList<>();
                         session.setAttribute("registeredShifts", registeredShifts);
@@ -104,16 +122,18 @@
                     for (RegisteredShift registeredShift : registeredShifts) {
                         availableWorkingShifts.removeIf(ws -> ws.getId().equals(registeredShift.getWorkingShift().getId()));
                     }
+                    availableWorkingShifts.add(0, selectedWorkingShift);
                     for (WorkingShift workingShift : availableWorkingShifts) {
+                        String optionValue = workingShift.getDate() + ", " + workingShift.getShift().getStartTime() + "-" + workingShift.getShift().getEndTime();
                 %>
-                <option value="<%= workingShift.getDate() + ", " + workingShift.getShift().getStartTime() + "-" + workingShift.getShift().getEndTime() %>">
-                    <%= workingShift.getDate() + ", " + workingShift.getShift().getStartTime() + "-" + workingShift.getShift().getEndTime() %>
+                <option value="<%= optionValue %>">
+                    <%= optionValue %>
                 </option>
                 <% } %>
             </select>
         </div>
 
-        <button type="submit" class="save-button">Save</button>
+        <button id="saveButton" type="submit" class="save-button">Save</button>
     </form>
 
     <%
@@ -140,9 +160,14 @@
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                         LocalDateTime now = LocalDateTime.now();
                         RegisteredShift registeredShift = new RegisteredShift(null, formatter.format(now), false, doctor, workingShift, null);
-                        registeredShifts.add(registeredShift);
+                        for (int i = 0; i < registeredShifts.size(); i++) {
+                            if (registeredShifts.get(i).getWorkingShift().getId().equals(modifyShift)) {
+                                registeredShifts.set(i, registeredShift);
+                                break;
+                            }
+                        }
                         session.setAttribute("registeredShifts", registeredShifts);
-                        response.sendRedirect("registerShift.jsp?isAdded=true");
+                        response.sendRedirect("registerShift.jsp?isEdited=true");
                     } else {
                         // Handle the case where the working shift does not exist
                         response.sendRedirect("registerShift.jsp?error=1");
@@ -158,6 +183,15 @@
             }
         }
     %>
+
+    <script>
+        function checkShiftSelection() {
+            const selectedShift = document.getElementById('workingShift').value;
+            const modifyShift = "<%= selectedShift %>";
+            const saveButton = document.getElementById('saveButton');
+            saveButton.disabled = selectedShift === modifyShift;
+        }
+    </script>
 </div>
 </body>
 </html>
