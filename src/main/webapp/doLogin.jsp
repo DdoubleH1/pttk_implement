@@ -17,7 +17,7 @@
             response.sendRedirect("doctor/DoctorHomePage.jsp");
         } else if (loggedInMember instanceof Manager) {
             session.setAttribute("Manager", loggedInMember);
-            response.sendRedirect("ManagerHomePage.jsp");
+            response.sendRedirect("manager/managerHomePage.jsp");
         } else {
             session.setAttribute("loginUsername", username);
             session.setAttribute("loginPassword", password);

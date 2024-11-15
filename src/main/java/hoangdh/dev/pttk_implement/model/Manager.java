@@ -8,8 +8,8 @@ import jakarta.persistence.Table;
 public class Manager extends Member {
 
 
-    public Manager(Integer id, String username, String password, String fullName, String dob, String gender, Integer age, String email, String role) {
-        super(id, username, password, fullName, dob, gender, age, email, role);
+    public Manager(Member member) {
+        super(member.getId(), member.getUsername(), member.getPassword(), member.getFullName(), member.getDob(), member.getGender(), member.getAge(), member.getEmail(), member.getRole());
     }
 
 

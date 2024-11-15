@@ -90,4 +90,16 @@ public class RegisteredShift {
     public void setRoom(Room room) {
         this.room = room;
     }
+
+    @Override
+    public String toString() {
+        return "RegisteredShift{" +
+                "id=" + id +
+                ", registeredTime=" + registeredTime +
+                ", isScheduled=" + isScheduled +
+                ", doctor=" + doctor.getId() +
+                ", workingShift=" + workingShift.getId() +
+                ", room=" + room.getId() +
+                '}';
+    }
 }

@@ -37,6 +37,13 @@ public class RegisteredShiftDAO extends DAO {
         return registeredShifts;
     }
 
+    public List<RegisteredShift> getAllRegisteredShifts() {
+        getSession().beginTransaction();
+        List<RegisteredShift> registeredShifts = getSession().createQuery("from RegisteredShift", RegisteredShift.class).list();
+        getSession().getTransaction().commit();
+        return registeredShifts;
+    }
+
     public Boolean updateRegisteredShift(int oldRegisteredShiftId, int newRegisteredShiftId) {
         try {
             getSession().beginTransaction();

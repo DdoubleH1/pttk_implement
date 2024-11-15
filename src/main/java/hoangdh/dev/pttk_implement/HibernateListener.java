@@ -24,13 +24,61 @@ public class HibernateListener implements ServletContextListener {
 //        doctorDAO.createDoctor(new Doctor(
 //                new Member(
 //                        null,
-//                        "doctor1",
-//                        "doctor1",
-//                        "John Doe",
+//                        "doctor3",
+//                        "doctor3",
+//                        "William Doe",
 //                        "1999-01-01",
-//                        "Male",
-//                        22,
-//                        "abc@gmail.com",
+//                        "Female",
+//                        42,
+//                        "test@gmail.com",
+//                        "Doctor"
+//                ),
+//                5,
+//                1000f,
+//                "I am a doctor"
+//
+//        ));doctorDAO.createDoctor(new Doctor(
+//                new Member(
+//                        null,
+//                        "doctor4",
+//                        "doctor4",
+//                        "Tim Ashley",
+//                        "1999-01-01",
+//                        "Female",
+//                        42,
+//                        "test1@gmail.com",
+//                        "Doctor"
+//                ),
+//                5,
+//                1000f,
+//                "I am a doctor"
+//
+//        ));doctorDAO.createDoctor(new Doctor(
+//                new Member(
+//                        null,
+//                        "doctor5",
+//                        "doctor5",
+//                        "Batman Doe",
+//                        "1999-01-01",
+//                        "Female",
+//                        42,
+//                        "test4@gmail.com",
+//                        "Doctor"
+//                ),
+//                5,
+//                1000f,
+//                "I am a doctor"
+//
+//        ));doctorDAO.createDoctor(new Doctor(
+//                new Member(
+//                        null,
+//                        "doctor6",
+//                        "doctor6",
+//                        "DoHuyHoang",
+//                        "1999-01-01",
+//                        "Female",
+//                        42,
+//                        "dhh@gmail.com",
 //                        "Doctor"
 //                ),
 //                5,
@@ -67,6 +115,20 @@ public class HibernateListener implements ServletContextListener {
 //            workingShiftDAO.createWorkingShift(workingShift1);
 //            workingShiftDAO.createWorkingShift(workingShift2);
 //        }
+
+        //create manager
+//        ManagerDAO managerDAO = new ManagerDAO();
+//        managerDAO.createManager(new Manager(
+//                new Member(
+//                        null,
+//                        "manager1",
+//                        "manager1",
+//                        "Jame Doe",
+//                        "1999-01-01",
+//                        "Male",
+//                        32,
+//                        "aaac@gmail.com",
+//                        "Manager")));
         DAO.init();
     }
 
