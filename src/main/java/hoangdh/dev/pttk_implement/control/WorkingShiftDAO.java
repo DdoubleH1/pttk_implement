@@ -55,6 +55,13 @@ public class WorkingShiftDAO extends DAO {
         return workingShift;
     }
 
+    public WorkingShift getWorkingShiftById(int id) {
+        getSession().beginTransaction();
+        WorkingShift workingShift = getSession().get(WorkingShift.class, id);
+        getSession().getTransaction().commit();
+        return workingShift;
+    }
+
 
 
 }

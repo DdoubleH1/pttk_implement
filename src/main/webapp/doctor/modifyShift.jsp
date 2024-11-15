@@ -9,6 +9,7 @@
 <%@ page import="hoangdh.dev.pttk_implement.model.Shift" %>
 <%@ page import="hoangdh.dev.pttk_implement.control.ShiftDAO" %>
 <%@ page import="org.hibernate.jdbc.Work" %>
+<%@ page import="hoangdh.dev.pttk_implement.control.RegisteredShiftDAO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -137,6 +138,7 @@
     </form>
 
     <%
+
         if ("POST".equalsIgnoreCase(request.getMethod())) {
             String workingShiftParam = request.getParameter("workingShift");
             if (workingShiftParam != null && !workingShiftParam.isEmpty()) {
@@ -148,26 +150,34 @@
 
                 ShiftDAO shiftDAO = new ShiftDAO();
                 Shift shift = shiftDAO.getShiftByTime(startTime, endTime);
-
                 if (shift != null) {
+                    // Use the shift object as needed
                     WorkingShiftDAO workingShiftDAO = new WorkingShiftDAO();
-                    WorkingShift workingShift = workingShiftDAO.getWorkingShiftByDateAndTime(date, startTime, endTime);
-
+                    WorkingShift workingShift = workingShiftDAO.getWorkingShiftByDateAndTime(date, shift.getStartTime(), shift.getEndTime());
                     if (workingShift != null) {
                         // Use the workingShift object as needed
-                        Doctor doctor = (Doctor) session.getAttribute("Doctor");
-                        //create new registered shift and add to list
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                        LocalDateTime now = LocalDateTime.now();
-                        RegisteredShift registeredShift = new RegisteredShift(null, formatter.format(now), false, doctor, workingShift, null);
-                        for (int i = 0; i < registeredShifts.size(); i++) {
-                            if (registeredShifts.get(i).getWorkingShift().getId().equals(modifyShift)) {
-                                registeredShifts.set(i, registeredShift);
-                                break;
+                        RegisteredShiftDAO registeredShiftDAO = new RegisteredShiftDAO();
+                        Boolean editResult = registeredShiftDAO.updateRegisteredShift(modifyShift, workingShift.getId());
+                        if (editResult) {
+                            // Update the registeredShifts list in the session
+                            for(RegisteredShift registeredShift : registeredShifts) {
+                                if (registeredShift.getWorkingShift().getId().equals(modifyShift)) {
+                                    registeredShift.setWorkingShift(workingShift);
+                                    break;
+                                }
                             }
+                            session.setAttribute("registeredShifts", registeredShifts);
+    %>
+    <script>
+        alert("Shift modified successfully!");
+        window.location.href = "registerShift.jsp?isEdited=true"; </script>
+    <%
+
+                        } else {
+                            // Handle the case where the working shift does not exist
+                            response.sendRedirect("registerShift.jsp?error=1");
                         }
-                        session.setAttribute("registeredShifts", registeredShifts);
-                        response.sendRedirect("registerShift.jsp?isEdited=true");
+
                     } else {
                         // Handle the case where the working shift does not exist
                         response.sendRedirect("registerShift.jsp?error=1");
@@ -180,8 +190,10 @@
             } else {
                 // Handle the case where the working shift is not selected
                 response.sendRedirect("registerShift.jsp?error=1");
+
             }
         }
+
     %>
 
     <script>
@@ -192,6 +204,8 @@
             saveButton.disabled = selectedShift === modifyShift;
         }
     </script>
+
+
 </div>
 </body>
 </html>

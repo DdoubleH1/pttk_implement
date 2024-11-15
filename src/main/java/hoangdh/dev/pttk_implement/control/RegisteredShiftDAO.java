@@ -1,6 +1,7 @@
 package hoangdh.dev.pttk_implement.control;
 
 import hoangdh.dev.pttk_implement.model.RegisteredShift;
+import hoangdh.dev.pttk_implement.model.WorkingShift;
 
 import java.util.List;
 
@@ -24,20 +25,8 @@ public class RegisteredShiftDAO extends DAO {
         return false;
     }
 
-//    public List<RegisteredShift> getRegisteredShiftsForNextWeek(int doctorId) {
-//        LocalDateTime now = LocalDateTime.now();
-//        LocalDateTime startOfNextWeek = now.plusWeeks(1).with(LocalTime.MIN);
-//        LocalDateTime endOfNextWeek = startOfNextWeek.plusDays(7).with(LocalTime.MAX);
-//
-//        getSession().beginTransaction();
-//        List<RegisteredShift> registeredShifts = getSession().createQuery("from RegisteredShift where doctor.id = :doctorId and workingShift.date between :startOfNextWeek and :endOfNextWeek", RegisteredShift.class)
-//                .setParameter("doctorId", doctorId)
-//                .setParameter("startOfNextWeek", Date.from(startOfNextWeek.atZone(ZoneId.systemDefault()).toInstant()))
-//                .setParameter("endOfNextWeek", Date.from(endOfNextWeek.atZone(ZoneId.systemDefault()).toInstant()))
-//                .list();
-//        getSession().getTransaction().commit();
-//        return registeredShifts;
-//    }
+    //get registered shift by id
+
 
     public List<RegisteredShift> getRegisteredShiftsByDoctorId(int doctorId) {
         getSession().beginTransaction();
@@ -48,11 +37,15 @@ public class RegisteredShiftDAO extends DAO {
         return registeredShifts;
     }
 
-    public Boolean updateRegisteredShift(int registeredShiftId) {
+    public Boolean updateRegisteredShift(int oldRegisteredShiftId, int newRegisteredShiftId) {
         try {
             getSession().beginTransaction();
-            RegisteredShift registeredShift = getSession().get(RegisteredShift.class, registeredShiftId);
+           //update working_shift_id to registered
+            RegisteredShift registeredShift = getSession().createQuery("from RegisteredShift where workingShift.id = :oldRegisteredShiftId", RegisteredShift.class)
+                    .setParameter("oldRegisteredShiftId", oldRegisteredShiftId)
+                    .uniqueResult();
             if (registeredShift != null) {
+                registeredShift.setWorkingShift(getSession().get(WorkingShift.class, newRegisteredShiftId));
                 getSession().merge(registeredShift);
                 getSession().getTransaction().commit();
                 return true;
@@ -67,7 +60,9 @@ public class RegisteredShiftDAO extends DAO {
     public Boolean deleteRegisteredShift(int registeredShiftId) {
         try {
             getSession().beginTransaction();
-            RegisteredShift registeredShift = getSession().get(RegisteredShift.class, registeredShiftId);
+            RegisteredShift registeredShift = getSession().createQuery("from RegisteredShift where workingShift.id = :registeredShiftId", RegisteredShift.class)
+                    .setParameter("registeredShiftId", registeredShiftId)
+                    .uniqueResult();
             if (registeredShift != null) {
                 getSession().remove(registeredShift);
                 getSession().getTransaction().commit();

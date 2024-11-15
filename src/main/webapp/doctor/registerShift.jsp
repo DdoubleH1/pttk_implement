@@ -122,14 +122,24 @@
         String deleteParam = request.getParameter("shiftID");
         if ((addParam != null && addParam.equals("true")) || (updateParam != null && updateParam.equals("true")) || (deleteParam != null)) {
             registeredShifts = (List<RegisteredShift>) session.getAttribute("registeredShifts");
-            if(deleteParam != null){
+            if (deleteParam != null) {
                 RegisteredShiftDAO registeredShiftDAO = new RegisteredShiftDAO();
-                registeredShiftDAO.deleteRegisteredShift(Integer.parseInt(deleteParam));
+                boolean result = registeredShiftDAO.deleteRegisteredShift(Integer.parseInt(deleteParam));
+                if (result) {
+                    //show message
+                    System.out.println("<script>alert('Shift deleted successfully.')</script>");
+                    for (int i = 0; i < registeredShifts.size(); i++) {
+                        if (registeredShifts.get(i).getWorkingShift().getId() == Integer.parseInt(deleteParam)) {
+                            registeredShifts.remove(i);
+                            break;
+                        }
+                    }
+                } else {
+                    //show message
+                    System.out.println("<script>alert('An error occurred while deleting the shift. Please try again.')</script>");
+                }
                 //show message
-                System.out.println("<script>alert('Shift deleted successfully.')</script>");
-                // update registeredShifts
-                registeredShifts = registeredShiftDAO.getRegisteredShiftsByDoctorId(((Doctor) session.getAttribute("Doctor")).getId());
-                session.setAttribute("registeredShifts", registeredShifts);
+
             }
         } else {
             Doctor doctor = (Doctor) session.getAttribute("Doctor");
@@ -183,7 +193,8 @@
             <%
                 }
             %>
-            <td><span class="delete-icon" onclick="confirmDelete('<%= shift.getWorkingShift().getId() %>')">🗑️</span></td>
+            <td><span class="delete-icon" onclick="confirmDelete('<%= shift.getWorkingShift().getId() %>')">🗑️</span>
+            </td>
 
         </tr>
         <%
@@ -208,10 +219,10 @@
 
 <script>
     <% if (errorParam != null && errorParam.equals("1")) { %>
-    alert("An error occurred while saving the registration. Please try again.");
+    alert("An error occurred. Please try again.");
     <% } %>
 
-    window.onload = function() {
+    window.onload = function () {
         const registeredShifts = <%= registeredShifts.size() %>;
         const saveButton = document.getElementById('saveButton');
         if (registeredShifts === 0) {
