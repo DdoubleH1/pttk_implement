@@ -166,7 +166,7 @@
                         </option>
                         <%
                             for (Room room : rooms) {
-                                if (room.getId() != rs.getRoom().getId()) {
+                                if (!room.getId().equals(rs.getRoom().getId())) {
                         %>
                         <option value="<%= room.getId() %>"><%= room.getName() %>
                         </option>

@@ -9,6 +9,7 @@
 <%@ page import="hoangdh.dev.pttk_implement.model.Shift" %>
 <%@ page import="hoangdh.dev.pttk_implement.control.ShiftDAO" %>
 <%@ page import="org.hibernate.jdbc.Work" %>
+<%@ page import="static java.awt.SystemColor.window" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -106,7 +107,7 @@
                     }
                     for (WorkingShift workingShift : availableWorkingShifts) {
                 %>
-                <option value="<%= workingShift.getDate() + ", " + workingShift.getShift().getStartTime() + "-" + workingShift.getShift().getEndTime() %>">
+                <option value="<%= workingShift.getId() %>">
                     <%= workingShift.getDate() + ", " + workingShift.getShift().getStartTime() + "-" + workingShift.getShift().getEndTime() %>
                 </option>
                 <% } %>
@@ -120,40 +121,30 @@
         if ("POST".equalsIgnoreCase(request.getMethod())) {
             String workingShiftParam = request.getParameter("workingShift");
             if (workingShiftParam != null && !workingShiftParam.isEmpty()) {
-                String[] parts = workingShiftParam.split(", ");
-                String date = parts[0];
-                String[] timeParts = parts[1].split("-");
-                String startTime = timeParts[0];
-                String endTime = timeParts[1];
-
-                ShiftDAO shiftDAO = new ShiftDAO();
-                Shift shift = shiftDAO.getShiftByTime(startTime, endTime);
-
-                if (shift != null) {
-                    WorkingShiftDAO workingShiftDAO = new WorkingShiftDAO();
-                    WorkingShift workingShift = workingShiftDAO.getWorkingShiftByDateAndTime(date, startTime, endTime);
-
-                    if (workingShift != null) {
-                        // Use the workingShift object as needed
-                        Doctor doctor = (Doctor) session.getAttribute("Doctor");
-                        //create new registered shift and add to list
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                        LocalDateTime now = LocalDateTime.now();
-                        RegisteredShift registeredShift = new RegisteredShift(null, formatter.format(now), false, doctor, workingShift, null);
-                        registeredShifts.add(registeredShift);
-                        session.setAttribute("registeredShifts", registeredShifts);
-                        response.sendRedirect("registerShift.jsp?isAdded=true");
-                    } else {
-                        // Handle the case where the working shift does not exist
-                        response.sendRedirect("registerShift.jsp?error=1");
-                    }
-
+                WorkingShiftDAO workingShiftDAO = new WorkingShiftDAO();
+                WorkingShift workingShift = workingShiftDAO.getWorkingShiftById(Integer.parseInt(workingShiftParam));
+                if (workingShift != null) {
+                    // Use the workingShift object as needed
+                    Doctor doctor = (Doctor) session.getAttribute("Doctor");
+                    //create new registered shift and add to list
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    LocalDateTime now = LocalDateTime.now();
+                    RegisteredShift registeredShift = new RegisteredShift(null, formatter.format(now), false, doctor, workingShift, null);
+                    registeredShifts.add(registeredShift);
+                    session.setAttribute("registeredShifts", registeredShifts);
+                    response.sendRedirect("registerShift.jsp?isAdded=true");
+    %>
+    <script>
+        alert("Shift modified successfully!");
+        window.location.href = "registerShift.jsp?isEdited=true"; </script>
+    <%
                 } else {
-                    // Handle the case where the shift does not exist
+                    // Handle the case where the working shift does not exist
                     response.sendRedirect("registerShift.jsp?error=1");
                 }
+
             } else {
-                // Handle the case where the working shift is not selected
+                // Handle the case where the shift does not exist
                 response.sendRedirect("registerShift.jsp?error=1");
             }
         }

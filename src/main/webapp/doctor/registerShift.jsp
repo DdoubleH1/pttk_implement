@@ -128,7 +128,6 @@
                 if (registeredShiftDAO.getRegisteredShiftById(Integer.parseInt(deleteParam)) != null) {
                     //show message
                     boolean result = registeredShiftDAO.deleteRegisteredShift(Integer.parseInt(deleteParam), doctor.getId());
-                    response.sendRedirect("registerShift.jsp?error=1");
                     if (result) {
                         //show message
                         for (int i = 0; i < registeredShifts.size(); i++) {
@@ -137,27 +136,26 @@
                                 break;
                             }
                         }
-                        %>
-                        <script>alert('Shift deleted successfully.')</script>
-                        <%
-                    } else {
-
-                        //show message
-                        %>
-                        <script>alert('Delete failed. Error occurred!')</script>
-                        <%
-                        }
-                    } else {
-                        for (int i = 0; i < registeredShifts.size(); i++) {
-                            if (registeredShifts.get(i).getWorkingShift().getId() == Integer.parseInt(deleteParam)) {
-                                registeredShifts.remove(i);
-                                break;
-                            }
-                        }
-                        %>
-                        <script>alert('Shift deleted successfully.')</script>
-                        <%
-                                }
+    %>
+    <script>alert('Shift deleted successfully.')</script>
+    <%
+    } else {
+    %>
+    <script>alert('Delete failed. Error occurred!')</script>
+    <%
+            response.sendRedirect("registerShift.jsp?error=1");
+        }
+    } else {
+        for (int i = 0; i < registeredShifts.size(); i++) {
+            if (registeredShifts.get(i).getWorkingShift().getId() == Integer.parseInt(deleteParam)) {
+                registeredShifts.remove(i);
+                break;
+            }
+        }
+    %>
+    <script>alert('Shift deleted successfully.')</script>
+    <%
+                }
 
             }
         } else {

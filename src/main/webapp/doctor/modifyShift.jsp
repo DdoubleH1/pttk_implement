@@ -10,6 +10,7 @@
 <%@ page import="hoangdh.dev.pttk_implement.control.ShiftDAO" %>
 <%@ page import="org.hibernate.jdbc.Work" %>
 <%@ page import="hoangdh.dev.pttk_implement.control.RegisteredShiftDAO" %>
+<%@ page import="static java.awt.SystemColor.window" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -91,14 +92,14 @@
         session.setAttribute("modifyShift", modifyShift.toString());
     %>
 </head>
-<body onload="checkShiftSelection()">
+<body>
 <div class="container">
     <h1>Modify Shift</h1>
 
     <form action="modifyShift.jsp?shiftID=<%= modifyShift%>" method="post">
         <div class="form-group">
             <label for="workingShift">Working Shift:</label>
-            <select id="workingShift" name="workingShift" onchange="checkShiftSelection()">
+            <select id="workingShift" name="workingShift">
                 <%
 
                     List<WorkingShift> workingShifts = (List<WorkingShift>) session.getAttribute("workingShifts");
@@ -123,11 +124,10 @@
                     for (RegisteredShift registeredShift : registeredShifts) {
                         availableWorkingShifts.removeIf(ws -> ws.getId().equals(registeredShift.getWorkingShift().getId()));
                     }
-                    availableWorkingShifts.add(0, selectedWorkingShift);
                     for (WorkingShift workingShift : availableWorkingShifts) {
                         String optionValue = workingShift.getDate() + ", " + workingShift.getShift().getStartTime() + "-" + workingShift.getShift().getEndTime();
                 %>
-                <option value="<%= optionValue %>">
+                <option value="<%= workingShift.getId() %>">
                     <%= optionValue %>
                 </option>
                 <% } %>
@@ -142,70 +142,32 @@
         if ("POST".equalsIgnoreCase(request.getMethod())) {
             String workingShiftParam = request.getParameter("workingShift");
             if (workingShiftParam != null && !workingShiftParam.isEmpty()) {
-                String[] parts = workingShiftParam.split(", ");
-                String date = parts[0];
-                String[] timeParts = parts[1].split("-");
-                String startTime = timeParts[0];
-                String endTime = timeParts[1];
-
-                ShiftDAO shiftDAO = new ShiftDAO();
-                Shift shift = shiftDAO.getShiftByTime(startTime, endTime);
-                if (shift != null) {
-                    // Use the shift object as needed
-                    WorkingShiftDAO workingShiftDAO = new WorkingShiftDAO();
-                    WorkingShift workingShift = workingShiftDAO.getWorkingShiftByDateAndTime(date, shift.getStartTime(), shift.getEndTime());
-                    if (workingShift != null) {
-                        // Use the workingShift object as needed
-                        RegisteredShiftDAO registeredShiftDAO = new RegisteredShiftDAO();
-                        Boolean editResult = registeredShiftDAO.updateRegisteredShift(modifyShift, workingShift.getId());
-                        if (editResult) {
-                            // Update the registeredShifts list in the session
-                            for(RegisteredShift registeredShift : registeredShifts) {
-                                if (registeredShift.getWorkingShift().getId().equals(modifyShift)) {
-                                    registeredShift.setWorkingShift(workingShift);
-                                    break;
-                                }
-                            }
-                            session.setAttribute("registeredShifts", registeredShifts);
+                WorkingShiftDAO workingShiftDAO = new WorkingShiftDAO();
+                WorkingShift workingShift = workingShiftDAO.getWorkingShiftById(Integer.parseInt(workingShiftParam));
+                if (workingShift != null) {
+                    for(RegisteredShift registeredShift : registeredShifts){
+                        if(registeredShift.getWorkingShift().getId().equals(modifyShift)){
+                            registeredShift.setWorkingShift(workingShift);
+                            break;
+                        }
+                    }
+                    session.setAttribute("registeredShifts", registeredShifts);
     %>
     <script>
         alert("Shift modified successfully!");
         window.location.href = "registerShift.jsp?isEdited=true"; </script>
     <%
 
-                        } else {
-                            // Handle the case where the working shift does not exist
-                            response.sendRedirect("registerShift.jsp?error=1");
-                        }
-
-                    } else {
-                        // Handle the case where the working shift does not exist
-                        response.sendRedirect("registerShift.jsp?error=1");
-                    }
-
                 } else {
-                    // Handle the case where the shift does not exist
+                    // Handle the case where the working shift does not exist
                     response.sendRedirect("registerShift.jsp?error=1");
                 }
             } else {
-                // Handle the case where the working shift is not selected
+                // Handle the case where the working shift does not exist
                 response.sendRedirect("registerShift.jsp?error=1");
-
             }
         }
-
     %>
-
-    <script>
-        function checkShiftSelection() {
-            const selectedShift = document.getElementById('workingShift').value;
-            const modifyShift = "<%= selectedShift %>";
-            const saveButton = document.getElementById('saveButton');
-            saveButton.disabled = selectedShift === modifyShift;
-        }
-    </script>
-
-
 </div>
 </body>
 </html>

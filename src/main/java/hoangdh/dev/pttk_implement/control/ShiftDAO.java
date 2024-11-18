@@ -15,21 +15,4 @@ public class ShiftDAO extends DAO{
         getSession().getTransaction().commit();
     }
 
-    public Shift getShiftById(int id) {
-        getSession().beginTransaction();
-        Shift shift = getSession().get(Shift.class, id);
-        getSession().getTransaction().commit();
-        return shift;
-    }
-
-    public Shift getShiftByTime(String startTime, String endTime) {
-        getSession().beginTransaction();
-        Query<Shift> query = getSession().createQuery(
-                "FROM Shift WHERE startTime = :startTime AND endTime = :endTime", Shift.class);
-        query.setParameter("startTime", startTime);
-        query.setParameter("endTime", endTime);
-        Shift shift = query.uniqueResult();
-        getSession().getTransaction().commit();
-        return shift;
-    }
 }

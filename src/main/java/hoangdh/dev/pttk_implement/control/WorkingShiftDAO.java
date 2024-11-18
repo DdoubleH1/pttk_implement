@@ -14,13 +14,6 @@ public class WorkingShiftDAO extends DAO {
         super();
     }
 
-    public void createWorkingShift(WorkingShift workingShift) {
-        getSession().beginTransaction();
-        getSession().persist(workingShift);
-        getSession().getTransaction().commit();
-    }
-
-
 
     public List<WorkingShift> getAllWorkingShifts() {
         getSession().beginTransaction();
@@ -39,20 +32,6 @@ public class WorkingShiftDAO extends DAO {
                 .list();
         getSession().getTransaction().commit();
         return workingShifts;
-    }
-
-    public WorkingShift getWorkingShiftByDateAndTime(String date, String startTime, String endTime) {
-        getSession().beginTransaction();
-        Query<WorkingShift> query = getSession().createQuery(
-                "FROM WorkingShift WHERE date = :date AND shift.startTime = :startTime AND shift.endTime = :endTime",
-                WorkingShift.class
-        );
-        query.setParameter("date", date);
-        query.setParameter("startTime", startTime);
-        query.setParameter("endTime", endTime);
-        WorkingShift workingShift = query.uniqueResult();
-        getSession().getTransaction().commit();
-        return workingShift;
     }
 
     public WorkingShift getWorkingShiftById(int id) {

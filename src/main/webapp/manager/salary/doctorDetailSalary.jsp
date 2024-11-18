@@ -92,7 +92,7 @@
 
     </style>
     <script>
-        function saveChanges() {
+        function validateSave() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"][name^="pay_"]');
             const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
             if (!isChecked) {
@@ -126,14 +126,14 @@
                     LocalDate date = LocalDate.parse(recordedShift.getWorkingShift().getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                     return date.isAfter(nextMonday.minusDays(1)) && date.isBefore(nextSunday.plusDays(1));
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         List<RecordedShift> previousWeeksShifts = recordedShifts.stream()
                 .filter(recordedShift -> {
                     LocalDate date = LocalDate.parse(recordedShift.getWorkingShift().getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                     return date.isBefore(nextMonday.minusDays(1));
                 })
-                .collect(Collectors.toList());
+                .toList();
     %>
 </head>
 <body>
@@ -146,7 +146,7 @@
     <%
     } else {
     %>
-    <form action="doSave.jsp" method="post" onsubmit="return saveChanges();">
+    <form action="doSave.jsp" method="post" onsubmit="return validateSave();">
     <h2>Current Week</h2>
         <table>
             <thead>
