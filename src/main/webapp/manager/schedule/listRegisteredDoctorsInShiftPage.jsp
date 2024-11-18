@@ -5,6 +5,8 @@
 <%@ page import="hoangdh.dev.pttk_implement.model.Room" %>
 <%@ page import="java.util.Enumeration" %>
 <%@ page import="hoangdh.dev.pttk_implement.model.RegisteredShift" %>
+<%@ page import="hoangdh.dev.pttk_implement.control.RegisteredShiftDAO" %>
+<%@ page import="java.util.ArrayList" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -96,6 +98,10 @@
             for (let checkbox of approvedCheckboxes) {
                 const doctorId = checkbox.name.split('_')[1];
                 const roomSelect = document.querySelector('select[name="room_' + doctorId + '"]');
+                if (!roomSelect.value) {
+                    alert("Each approved doctor must have a room assigned.");
+                    return false;
+                }
                 if (selectedRooms.has(roomSelect.value)) {
                     alert("Each room can only be assigned to one doctor per shift.");
                     return false;
@@ -113,6 +119,7 @@
     <%
         String shiftID = request.getParameter("shiftId");
         session.setAttribute("shiftId", shiftID);
+        List<RegisteredShift> registeredShifts = (List<RegisteredShift>) session.getAttribute("registeredShifts");
     %>
     <form action="listRegisteredDoctorsInShiftPage.jsp?shiftId=<%= shiftID%>" method="post"
           onsubmit="return validateForm()">
@@ -144,20 +151,56 @@
                 <td>
                     <%
                         RoomDAO roomDAO = new RoomDAO();
-                        List<Room> room = roomDAO.getRooms();
+                        List<Room> rooms = roomDAO.getRooms();
+                        boolean isAssigned = false;
                     %>
                     <select name="room_<%= doctor.getId() %>">
+                        <option value="">Select a room</option>
                         <%
-                            for (Room r : room) {
+                            for (RegisteredShift rs : registeredShifts) {
+                                if (rs.getDoctor().getId().equals(doctor.getId()) && rs.getWorkingShift().getId() == Integer.parseInt(shiftID)) {
+                                    if (rs.getRoom() != null) {
+                                        isAssigned = true;
                         %>
-                        <option value="<%= r.getId() %>"><%= r.getName() %>
+                        <option value="<%= rs.getRoom().getId() %>" selected><%= rs.getRoom().getName() %>
                         </option>
                         <%
+                            for (Room room : rooms) {
+                                if (room.getId() != rs.getRoom().getId()) {
+                        %>
+                        <option value="<%= room.getId() %>"><%= room.getName() %>
+                        </option>
+                        <%
+                                }
+                            }
+                        %>
+                        <%
+                                    }
+                                }
+                            }
+                            if (!isAssigned) {
+                                for (Room room : rooms) {
+                        %>
+                        <option value="<%= room.getId() %>"><%= room.getName() %>
+                        </option>
+                        <%
+                                }
                             }
                         %>
                     </select>
                 </td>
-                <td><input type="checkbox" name="approve_<%= doctor.getId() %>"></td>
+                <td>
+                    <%
+                        boolean isScheduled = false;
+                        for (RegisteredShift rs : registeredShifts) {
+                            if (rs.getDoctor().getId().equals(doctor.getId()) && rs.getWorkingShift().getId() == Integer.parseInt(shiftID) && rs.getIsScheduled()) {
+                                isScheduled = true;
+                                break;
+                            }
+                        }
+                    %>
+                    <input type="checkbox" name="approve_<%= doctor.getId() %>" <%= isScheduled ? "checked" : "" %>>
+                </td>
             </tr>
             <%
                     }
@@ -176,31 +219,47 @@
 
 <%
     if ("POST".equalsIgnoreCase(request.getMethod())) {
-        List<RegisteredShift> registeredShifts = (List<RegisteredShift>) session.getAttribute("registeredShifts");
+        registeredShifts = (List<RegisteredShift>) session.getAttribute("registeredShifts");
+        List<RegisteredShift> newRegisteredShifts = new ArrayList<>();
+        for (RegisteredShift rs : registeredShifts) {
+            RegisteredShift newRs = new RegisteredShift(rs.getId(), rs.getRegisteredTime(), rs.getIsScheduled(), rs.getDoctor(), rs.getWorkingShift(), rs.getRoom());
+            newRegisteredShifts.add(newRs);
+        }
         RoomDAO roomDAO = new RoomDAO();
+        RegisteredShiftDAO registeredShiftDAO = new RegisteredShiftDAO();
         Enumeration<String> parameterNames = request.getParameterNames();
+        List<String> selectedDoctorIds = new ArrayList<>();
         while (parameterNames.hasMoreElements()) {
             String paramName = parameterNames.nextElement();
             if (paramName.startsWith("approve_")) {
                 String doctorId = paramName.split("_")[1];
-                for (RegisteredShift rs : registeredShifts) {
+                selectedDoctorIds.add(doctorId);
+                for (RegisteredShift rs : newRegisteredShifts) {
                     if (rs.getDoctor().getId().equals(Integer.parseInt(doctorId)) && rs.getWorkingShift().getId() == Integer.parseInt(shiftID)) {
                         rs.setIsScheduled(true);
-                    }
-                }
-            }
-            if (paramName.startsWith("room_")) {
-                String doctorId = paramName.split("_")[1];
-                String roomID = request.getParameter(paramName);
-                Room room = roomDAO.getRoomById(Integer.parseInt(roomID));
-                for (RegisteredShift rs : registeredShifts) {
-                    if (rs.getDoctor().getId().equals(Integer.parseInt(doctorId)) && rs.getWorkingShift().getId() == Integer.parseInt(shiftID)) {
-                        rs.setRoom(room);
+                        String roomId = request.getParameter("room_" + doctorId);
+                        if(roomId != null && !roomId.isEmpty()) {
+                            Room room = roomDAO.getRoomById(Integer.parseInt(roomId));
+                            rs.setRoom(room);
+                        } else {
+                            rs.setIsScheduled(false);
+                            rs.setRoom(null);
+                        }
                     }
                 }
             }
         }
-        session.setAttribute("registeredShifts", registeredShifts);
+        for(RegisteredShift rs : newRegisteredShifts) {
+            if(!selectedDoctorIds.contains(rs.getDoctor().getId().toString()) && rs.getWorkingShift().getId() == Integer.parseInt(shiftID)) {
+                rs.setIsScheduled(false);
+                rs.setRoom(null);
+            }
+        }
+
+        session.setAttribute("registeredShifts", newRegisteredShifts);
         response.sendRedirect("createWorkingSchedule.jsp");
+
+%>
+<%
     }
 %>

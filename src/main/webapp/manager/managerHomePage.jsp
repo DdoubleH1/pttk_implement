@@ -68,8 +68,8 @@
     <h1>Manager Home Page</h1>
     <p>Welcome Manager <%= manager.getFullName() %></p>
     <div class="button-container">
-        <button class="button" onclick="window.location.href='createWorkingSchedule.jsp'">Create Working Schedule</button>
-        <button class="button" onclick="window.location.href='viewShifts.jsp'">Process Salary Payment</button>
+        <button class="button" onclick="window.location.href='schedule/createWorkingSchedule.jsp'">Create Working Schedule</button>
+        <button class="button" onclick="window.location.href='salary/processSalaryPayment.jsp'">Process Salary Payment</button>
     </div>
 </div>
 </body>

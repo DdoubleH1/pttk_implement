@@ -116,6 +116,7 @@
 
     <%
         List<RegisteredShift> registeredShifts;
+        Doctor doctor = (Doctor) session.getAttribute("Doctor");
         String addParam = request.getParameter("isAdded");
         String updateParam = request.getParameter("isEdited");
         String errorParam = request.getParameter("error");
@@ -124,25 +125,43 @@
             registeredShifts = (List<RegisteredShift>) session.getAttribute("registeredShifts");
             if (deleteParam != null) {
                 RegisteredShiftDAO registeredShiftDAO = new RegisteredShiftDAO();
-                boolean result = registeredShiftDAO.deleteRegisteredShift(Integer.parseInt(deleteParam));
-                if (result) {
+                if (registeredShiftDAO.getRegisteredShiftById(Integer.parseInt(deleteParam)) != null) {
                     //show message
-                    System.out.println("<script>alert('Shift deleted successfully.')</script>");
-                    for (int i = 0; i < registeredShifts.size(); i++) {
-                        if (registeredShifts.get(i).getWorkingShift().getId() == Integer.parseInt(deleteParam)) {
-                            registeredShifts.remove(i);
-                            break;
+                    boolean result = registeredShiftDAO.deleteRegisteredShift(Integer.parseInt(deleteParam), doctor.getId());
+                    response.sendRedirect("registerShift.jsp?error=1");
+                    if (result) {
+                        //show message
+                        for (int i = 0; i < registeredShifts.size(); i++) {
+                            if (registeredShifts.get(i).getWorkingShift().getId() == Integer.parseInt(deleteParam)) {
+                                registeredShifts.remove(i);
+                                break;
+                            }
                         }
-                    }
-                } else {
-                    //show message
-                    System.out.println("<script>alert('An error occurred while deleting the shift. Please try again.')</script>");
-                }
-                //show message
+                        %>
+                        <script>alert('Shift deleted successfully.')</script>
+                        <%
+                    } else {
+
+                        //show message
+                        %>
+                        <script>alert('Delete failed. Error occurred!')</script>
+                        <%
+                        }
+                    } else {
+                        for (int i = 0; i < registeredShifts.size(); i++) {
+                            if (registeredShifts.get(i).getWorkingShift().getId() == Integer.parseInt(deleteParam)) {
+                                registeredShifts.remove(i);
+                                break;
+                            }
+                        }
+                        %>
+                        <script>alert('Shift deleted successfully.')</script>
+                        <%
+                                }
 
             }
         } else {
-            Doctor doctor = (Doctor) session.getAttribute("Doctor");
+
             RegisteredShiftDAO registeredShiftDAO = new RegisteredShiftDAO();
             registeredShifts = registeredShiftDAO.getRegisteredShiftsByDoctorId(doctor.getId());
             session.setAttribute("registeredShifts", registeredShifts);
@@ -190,11 +209,17 @@
             <td><span class="edit-icon"
                       onclick="window.location.href='modifyShift.jsp?shiftID=<%= shift.getWorkingShift().getId() %>'">✏️</span>
             </td>
+            <td><span class="delete-icon" onclick="confirmDelete('<%= shift.getWorkingShift().getId() %>')">🗑️</span>
+            </td>
+            <%
+            } else {
+            %>
+            <td></td>
+            <td></td>
             <%
                 }
             %>
-            <td><span class="delete-icon" onclick="confirmDelete('<%= shift.getWorkingShift().getId() %>')">🗑️</span>
-            </td>
+
 
         </tr>
         <%

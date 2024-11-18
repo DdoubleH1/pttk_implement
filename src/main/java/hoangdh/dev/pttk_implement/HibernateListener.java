@@ -129,6 +129,7 @@ public class HibernateListener implements ServletContextListener {
 //                        32,
 //                        "aaac@gmail.com",
 //                        "Manager")));
+
         DAO.init();
     }
 

@@ -14,7 +14,12 @@ public class RegisteredShiftDAO extends DAO {
         try {
             getSession().beginTransaction();
             for (RegisteredShift registeredShift : registeredShifts) {
-                getSession().persist(registeredShift);
+                if (!getSession().contains(registeredShift)) {
+                    getSession().persist(registeredShift);
+                } else {
+                    getSession().merge(registeredShift);
+                }
+                getSession().flush();
             }
             getSession().getTransaction().commit();
             return true;
@@ -24,6 +29,35 @@ public class RegisteredShiftDAO extends DAO {
         }
         return false;
     }
+
+    public boolean saveSchedule(List<RegisteredShift> scheduledRegisteredShifts) {
+        try {
+            List<RegisteredShift> existingRegisteredShifts = getAllRegisteredShifts();
+            getSession().beginTransaction();
+            for (RegisteredShift scheduledRegisteredShift : scheduledRegisteredShifts) {
+                RegisteredShift existingRegisteredShift = existingRegisteredShifts.stream()
+                        .filter(rs -> rs.getDoctor().getId().equals(scheduledRegisteredShift.getDoctor().getId()) && rs.getWorkingShift().getId().equals(scheduledRegisteredShift.getWorkingShift().getId()))
+                        .findFirst()
+                        .orElse(null);
+                if (existingRegisteredShift != null) {
+                    existingRegisteredShift.setRoom(scheduledRegisteredShift.getRoom());
+                    existingRegisteredShift.setIsScheduled(scheduledRegisteredShift.getIsScheduled());
+                    getSession().merge(existingRegisteredShift);
+                }
+                else {
+                    getSession().persist(scheduledRegisteredShift);
+                }
+                getSession().flush();
+            }
+            getSession().getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            getSession().getTransaction().rollback();
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     //get registered shift by id
 
@@ -64,11 +98,12 @@ public class RegisteredShiftDAO extends DAO {
         return false;
     }
 
-    public Boolean deleteRegisteredShift(int registeredShiftId) {
+    public Boolean deleteRegisteredShift(int registeredShiftId, int doctorId) {
         try {
             getSession().beginTransaction();
-            RegisteredShift registeredShift = getSession().createQuery("from RegisteredShift where workingShift.id = :registeredShiftId", RegisteredShift.class)
+            RegisteredShift registeredShift = getSession().createQuery("from RegisteredShift where workingShift.id = :registeredShiftId and doctor.id = :doctorId", RegisteredShift.class)
                     .setParameter("registeredShiftId", registeredShiftId)
+                    .setParameter("doctorId", doctorId)
                     .uniqueResult();
             if (registeredShift != null) {
                 getSession().remove(registeredShift);
@@ -82,4 +117,14 @@ public class RegisteredShiftDAO extends DAO {
         }
         return false;
     }
+
+    public RegisteredShift getRegisteredShiftById(int id) {
+        getSession().beginTransaction();
+        RegisteredShift registeredShift = getSession().get(RegisteredShift.class, id);
+        getSession().getTransaction().commit();
+        return registeredShift;
+    }
+
+
+
 }

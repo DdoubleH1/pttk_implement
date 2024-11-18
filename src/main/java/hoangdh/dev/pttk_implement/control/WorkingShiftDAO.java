@@ -25,7 +25,7 @@ public class WorkingShiftDAO extends DAO {
     public List<WorkingShift> getAllWorkingShifts() {
         getSession().beginTransaction();
         LocalDate today = LocalDate.now();
-        LocalDate nextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+        LocalDate nextMonday = today.plusDays((DayOfWeek.MONDAY.getValue() - today.getDayOfWeek().getValue() + 7) % 7);
         LocalDate nextSunday = nextMonday.plusDays(6);  // End of the next week
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String startOfNextWeek = nextMonday.format(formatter);

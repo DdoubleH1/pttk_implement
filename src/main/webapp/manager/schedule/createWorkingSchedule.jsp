@@ -24,6 +24,7 @@
             margin: 0;
             background-color: #f2f2f2;
         }
+
         .schedule-container {
             width: 300px;
             background-color: white;
@@ -32,10 +33,12 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
+
         h2 {
             margin-bottom: 20px;
             color: #000;
         }
+
         select {
             width: 100%;
             padding: 10px;
@@ -46,9 +49,11 @@
             color: white;
             font-size: 16px;
         }
+
         option {
             color: white;
         }
+
         .shift-button {
             font-size: 18px; /* Increase font size for start time and end time */
             padding: 10px;
@@ -59,6 +64,7 @@
             color: white;
             cursor: pointer;
         }
+
     </style>
     <script>
         function showShifts(date) {
@@ -80,6 +86,13 @@
     <h2>Create Working Schedule</h2>
 
     <%
+        String error = request.getParameter("error");
+        if (error != null && error.equals("1")) {
+            %>
+            <script> alert("An error occurred. Please try again."); </script>
+            <%
+        }
+
         List<RegisteredShift> registeredShifts;
         registeredShifts = (List<RegisteredShift>) session.getAttribute("registeredShifts");
         if (registeredShifts == null) {
@@ -111,7 +124,8 @@
             for (Map.Entry<LocalDate, List<WorkingShift>> entry : sortedShiftsByDate.entrySet()) {
                 LocalDate date = entry.getKey();
         %>
-        <option value="<%= date %>"><%= date.format(formatter) %></option>
+        <option value="<%= date %>"><%= date.format(formatter) %>
+        </option>
         <%
             }
         %>
@@ -136,6 +150,9 @@
     <%
         }
     %>
+
+    <button class="shift-button" onclick="window.location.href='doSave.jsp'" name="save">Save</button>
+
 
 </div>
 

@@ -6,6 +6,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "doctor")
+
 public class Doctor extends Member {
 
     @Column(name = "yearOfExperience")

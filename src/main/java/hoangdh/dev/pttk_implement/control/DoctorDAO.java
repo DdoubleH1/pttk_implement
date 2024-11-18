@@ -30,4 +30,19 @@ public class DoctorDAO extends DAO{
         getSession().getTransaction().commit();
         return doctors;
     }
+
+    public List<Doctor> getAllDoctors() {
+        getSession().beginTransaction();
+        List<Doctor> doctors = getSession().createQuery("from Doctor", Doctor.class).list();
+        getSession().getTransaction().commit();
+        return doctors;
+    }
+
+    // get doctor by id
+    public Doctor getDoctorById(int id) {
+        getSession().beginTransaction();
+        Doctor doctor = getSession().get(Doctor.class, id);
+        getSession().getTransaction().commit();
+        return doctor;
+    }
 }

@@ -16,6 +16,13 @@
         <mapping class="hoangdh.dev.pttk_implement.model.Shift"/>
         <mapping class="hoangdh.dev.pttk_implement.model.WorkingShift"/>
         <mapping class="hoangdh.dev.pttk_implement.model.Room"/>
+        <mapping class="hoangdh.dev.pttk_implement.model.Patient"/>
+        <mapping class="hoangdh.dev.pttk_implement.model.Prescription"/>
+        <mapping class="hoangdh.dev.pttk_implement.model.RecordedShift"/>
+        <mapping class="hoangdh.dev.pttk_implement.model.TestCategory"/>
+        <mapping class="hoangdh.dev.pttk_implement.model.TestResult"/>
+        <mapping class="hoangdh.dev.pttk_implement.model.PatientProfile"/>
+        <mapping class="hoangdh.dev.pttk_implement.model.SalarySlip"/>
 
     </session-factory>
 </hibernate-configuration>
